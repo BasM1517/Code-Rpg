@@ -13,11 +13,11 @@ var leader = "KleptoKite";
 //the merchant
 var merchant = "R3dP";
 //what they are allowed to hunt on a monsterhuntquest
-var monsterhunt_whitelist = ["snake","bee","goo","frog","tortoise","squig","squigtoad"];
+var monsterhunt_whitelist = ["porcupine","osnake","crab","snake","bee","goo","frog","tortoise","squig","squigtoad"];
 //the items the are allowed to carry
 var keeplist = ["tracker","mpot0","hpot0"];
 //this is the default setting if they are team mode or not
-var original_team_mode = true;
+var original_team_mode = false;
 //this is the current value
 var team_mode = false;
 //if monsterhunt is enabled or not
@@ -90,6 +90,12 @@ setInterval(function(){
             else if(character.max_hp - character.hp >= 500){
                 heal(character);
             }
+            if(!is_on_cooldown("curse")){
+                use_skill("curse",target);
+            }
+        }
+        if(character.ctype == "ranger" && character.max_mp - character.mp <= 500){
+            use_skill("supershot",target);
         }
         if(character.ctype == "warrior" && get_target_of(target) != leader){
             use_skill("taunt",target);
@@ -154,6 +160,7 @@ function smarter_move(mapN,mobN){
         const y = (gMapMonster.boundary[1] + gMapMonster.boundary[3]) / 2
         return smart_move({map: mapN, x: x, y: y})
       }
+      return smart_move(attack_monster_name_currently);
 }
 
 async function on_cm(name,data)

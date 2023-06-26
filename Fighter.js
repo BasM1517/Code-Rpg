@@ -1,7 +1,8 @@
 //makes sure if your characters will atack
 var attack_mode=true;
+var killcount = 0;
 //is the monster they will seek to kill
-var attack_monster_name="snake"
+var attack_monster_name="squig";
 //is the monster they are currently attacking this can be attack_monster_name or the monsterhunt
 var attack_monster_name_currently="";
 //this will be a array where they can rotate between
@@ -13,15 +14,16 @@ var leader = "KleptoKite";
 //the merchant
 var merchant = "R3dP";
 //what they are allowed to hunt on a monsterhuntquest
-var monsterhunt_whitelist = ["porcupine","osnake","crab","snake","bee","goo","frog","tortoise","squig","squigtoad"];
+var monsterhunt_whitelist = ["osnake","crab","snake","bee","goo","frog","tortoise","squig","squigtoad"];
 //the items the are allowed to carry
 var keeplist = ["tracker","mpot0","hpot0"];
 //this is the default setting if they are team mode or not
-var original_team_mode = false;
-//this is the current value
-var team_mode = false;
+var original_team_mode = true;
+//this is the current value keep true when monsterhunt is not enabled
+var team_mode = true;
 //if monsterhunt is enabled or not
-var monsterhunt_mode = true;
+var monsterhunt_mode = false;
+attack_monster_name_currently = attack_monster_name;
 //the last date that the potion has been used for cooldowns
 last_potion = new Date();
 setInterval(function(){
@@ -31,10 +33,17 @@ setInterval(function(){
 	use_hp_or_mp_own();
 	loot();
     //takes care of respawn
-    if(character.rip) {respawn(); return;}
+    if(character.rip) {
+        target = null;
+        respawn(); 
+        return;}
 	if(!attack_mode || character.rip || is_moving(character)) return;
     handle_monsterhunt();
-
+    if(check_for_monster("phoenix") == 1){
+        attack_monster_name_currently = "phoenix"
+    }else{
+        attack_monster_name_currently = attack_monster_name
+    }
     if(team_mode == false || character.id == leader){
         var target=get_targeted_monster();
         if(!target)
@@ -77,35 +86,53 @@ setInterval(function(){
         if(character.ctype == "priest" ){
             leaderentity = get_entity(leader);
             chestakiteentity = get_entity("chestakite");
-            if(leaderentity !== undefined){
-				if(leaderentity.max_hp - leaderentity.hp >= 500){
-                	heal(leaderentity);
-				}
+            const hpnumbers = [];
+            if (leaderentity !== undefined) {
+                if (leaderentity.max_hp - leaderentity.hp >= 500) {
+                  hpnumbers.push({ hp: (leaderentity.max_hp - leaderentity.hp) / leaderentity.max_hp, character: leaderentity });
+              }
             }
-			else if(chestakiteentity !== undefined){
-				if(chestakiteentity.max_hp - chestakiteentity.hp >= 500){
-                	heal(chestakiteentity);
-				}
+            if (chestakiteentity !== undefined) {
+                if (chestakiteentity.max_hp - chestakiteentity.hp >= 500) {
+                  hpnumbers.push({ hp: (chestakiteentity.max_hp - chestakiteentity.hp) / chestakiteentity.max_hp, character: chestakiteentity });
+              }
+            } 
+            if (character.max_hp - character.hp >= 500) {
+              hpnumbers.push({ hp: (character.max_hp - character.hp) / character.max_hp, character: character });
             }
-            else if(character.max_hp - character.hp >= 500){
-                heal(character);
-            }
+            hpnumbers.forEach(obj => {
+            });
+            var res = Math.max.apply(Math, hpnumbers.map(function (o) { return o.hp; }));
+            var obj = hpnumbers.find(function (o) { return o.hp == res; });
+            if (obj) {
+                heal(obj.character);
+              }
+                     
             if(!is_on_cooldown("curse")){
                 use_skill("curse",target);
             }
         }
-        if(character.ctype == "ranger" && character.max_mp - character.mp <= 500){
+        if(character.ctype == "ranger" && character.max_mp - character.mp <= 500 && target){
             use_skill("supershot",target);
         }
         if(character.ctype == "warrior" && get_target_of(target) != leader){
             use_skill("taunt",target);
+        }
+        if(character.ctype == "warrior" && target){
+            use_skill("stomp",target);
+        }
+        if(character.ctype == "ranger" && target){
+            use_skill("supershot",target);
         }
 		attack(target);
 	}
 
 },1000/4); // Loops every 1/4 seconds.
 
-setInterval(function(){check_for_potions();}, 100000);
+setInterval(function(){
+        check_for_potions();
+    unset_target();
+}, 100000);
 
 //handle potions use
 function use_hp_or_mp_own(){
@@ -133,21 +160,41 @@ function check_for_potions(){
 //goes through the inverntory to check if potions are available
 function myFunction(item) {
 	if(item != null){
-		  if(item.q <= 100 && item.name == "mpot0" || item.q <= 100 && item.name == "hpot0" || locate_item_own("hpot0") != 1 || locate_item_own("mpot0") != 1){
-            sendlocation("R3dP");
+		  if(item.q <= 1000 && item.name == "mpot0" || item.q <= 1000 && item.name == "hpot0" || locate_item_own("hpot0") != 1 || locate_item_own("mpot0") != 1){
+            if(team_mode == true && character.id != leader){
+                hpvalue = 5000 - locate_item_own("hppot0")
+                mpvalue = 5000 - locate_item_own("mppot0")
+                send_cm(leader,"3," + hpvalue + "," + mpvalue)
+            }else{
+                sendlocation("R3dP");
+            }
             return true
 		  }else{
 			  return false;
 		  }
 	}
 }
-
+function on_combined_damage() // When multiple characters stay in the same spot, they receive combined damage, this function gets called whenever a monster deals combined damage
+{
+    xrange=Math.floor(Math.random() * 10);
+	move(character.real_x+xrange,character.real_y);
+}
+function unset_target(){
+    target = "";
+}
 function on_party_invite(name) // called by the inviter's name
 {
     if(name = "R3dP"){
         accept_party_invite(name);
     }
 }
+function check_for_monster(monstertype){
+    if(get_nearest_monster({type: monstertype}) != null){
+      return 1
+    }else{
+      return null
+    }
+  }
 //a better movement then the default
 function smarter_move(mapN,mobN){
     if(!G.maps[mapN]) {
@@ -171,14 +218,36 @@ async function on_cm(name,data)
     }
 
 	if(ans[0] == "1"){
-		await smart_move({x:ans[1], y:ans[2], map: "main"});
+		await smart_move({x:ans[1], y:ans[2], map: ans[5]});
 	}
+    if(ans[0] == "3"){
+		sendpotions(name,ans[1],ans[2])
+	}
+    if(ans[0] == "4"){
+        smart_move({x:ans[1], y:ans[2], map:ans[3]})
+    }
+}
+function sendpotions(reciever,quantityhp,quantitymp){
+    parent.socket.emit("send", { name: reciever, num: locate_item("hpot0"), q: quantityhp});
+    parent.socket.emit("send", { name: reciever, num: locate_item("mpot0"), q: quantitymp});
 }
 //sends the location in a cm
 function sendlocation(reciever){
     var x = character.x;
     var y = character.y;
-    send_cm(reciever,"1," + x + "," + y);
+    var map = character.map;
+    if(locate_item_own("hpot0") != -1){
+        var hppotsneeded = 5000 - locate_item_own("hppot0");
+    }else{
+        var hppotsneeded = 5000
+    }
+
+    if(locate_item_own("mpot0") != -1){
+        var mppotsneeded = 5000 - locate_item_own("mppot0");
+    }else{
+        var mppotsneeded = 5000
+    }
+    send_cm(reciever,"1," + x + "," + y + "," + hppotsneeded + "," + mppotsneeded + "," + map);
 }
 //a prototype for skills
 function useskill(skillname,target,archetype){
@@ -247,5 +316,3 @@ function send_Items_gold(){
         }
     }
 }
-// Learn Javascript: https://www.codecademy.com/learn/introduction-to-javascript
-// Write your own CODE: https://github.com/kaansoral/adventureland

@@ -336,7 +336,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated', - scalar(mc_jvm_memory{type='free',)",
+          "expr": "mc_jvm_memory{type='allocated'} - scalar(mc_jvm_memory{type='free'})",
           "instant": false,
           "refId": "A"
         }
@@ -568,7 +568,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='max',",
+          "expr": "mc_jvm_memory{type='max'",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -582,7 +582,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated', - scalar(mc_jvm_memory{type='free',)",
+          "expr": "mc_jvm_memory{type='allocated' - scalar(mc_jvm_memory{type='free')",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -595,7 +595,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated',",
+          "expr": "mc_jvm_memory{type='allocated'}",
           "hide": true,
           "refId": "C"
         }

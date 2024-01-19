@@ -116,7 +116,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "mc_players_total{server_name=~\"$server_name\"}",
+          "expr": "mc_players_total",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -133,7 +133,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(mc_players_online_total{server_name=~\"$server_name\"}) by (world)",
+          "expr": "sum(mc_players_online_total) by (world)",
           "legendFormat": "Online ({{world}})",
           "refId": "B"
         },
@@ -144,7 +144,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "mc_whitelisted_players{server_name=~\"$server_name\"}",
+          "expr": "mc_whitelisted_players",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -263,7 +263,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(mc_players_online_total{server_name=~\"$server_name\"})",
+          "expr": "sum(mc_players_online_total)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -336,7 +336,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated', server_name=~\"$server_name\"} - scalar(mc_jvm_memory{type='free', server_name=~\"$server_name\"})",
+          "expr": "mc_jvm_memory{type='allocated'} - scalar(mc_jvm_memory{type='free'})",
           "instant": false,
           "refId": "A"
         }
@@ -408,7 +408,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_tps{server_name=~\"$server_name\"}",
+          "expr": "mc_tps",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
@@ -473,7 +473,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_loaded_chunks_total{server_name=~\"$server_name\"}",
+          "expr": "mc_loaded_chunks_total",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{world}}",
@@ -568,7 +568,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='max', server_name=~\"$server_name\"}",
+          "expr": "mc_jvm_memory{type='max'",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -582,7 +582,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated', server_name=~\"$server_name\"} - scalar(mc_jvm_memory{type='free', server_name=~\"$server_name\"})",
+          "expr": "mc_jvm_memory{type='allocated' - scalar(mc_jvm_memory{type='free')",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -595,7 +595,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_jvm_memory{type='allocated', server_name=~\"$server_name\"}",
+          "expr": "mc_jvm_memory{type='allocated'}",
           "hide": true,
           "refId": "C"
         }
@@ -691,7 +691,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "sum (mc_entities_total{server_name=~\"$server_name\"}) by (world)",
+          "expr": "sum (mc_entities_total) by (world)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -792,7 +792,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "mc_tps{server_name=~\"$server_name\"}",
+          "expr": "mc_tps",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "TPS",
@@ -925,7 +925,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "sum(mc_jvm_threads_current{server_name=~\"$server_name\"})",
+          "expr": "sum(mc_jvm_threads_current)",
           "interval": "",
           "legendFormat": "TOTAL",
           "refId": "A"
@@ -936,7 +936,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "sum by (state) (mc_jvm_threads_state{server_name=~\"$server_name\"})",
+          "expr": "sum by (state) (mc_jvm_threads_state)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{state}}",
@@ -1034,7 +1034,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "mc_players_total{server_name=~\"$server_name\"}",
+          "expr": "mc_players_total",
           "interval": "",
           "legendFormat": "unique players",
           "refId": "A"
@@ -1130,7 +1130,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum (mc_villagers_total{server_name=~\"$server_name\"}) by (world, level, profession)",
+          "expr": "sum (mc_villagers_total) by (world, level, profession)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1204,7 +1204,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "sort_desc(sum (mc_entities_total{server_name=~\"$server_name\"}) by (type))",
+          "expr": "sort_desc(sum (mc_entities_total) by (type))",
           "instant": true,
           "interval": "",
           "legendFormat": "{{type}}",
